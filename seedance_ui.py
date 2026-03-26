@@ -322,6 +322,15 @@ def main(page: ft.Page):
             hint_text=hint,
         )
 
+    def make_media_list_input(label, min_lines, max_lines):
+        return ft.TextField(
+            label=label,
+            multiline=True,
+            min_lines=min_lines,
+            max_lines=max_lines,
+            width=430,
+        )
+
     def form_row(controls, spacing=10):
         return ft.Row(
             controls,
@@ -697,7 +706,7 @@ def main(page: ft.Page):
     i2v_aspect = make_aspect_ratio()
     i2v_duration = make_duration()
     i2v_quality = make_quality()
-    i2v_images = ft.TextField(label="Image URLs or paths (one per line)", multiline=True, min_lines=2, max_lines=3, expand=True)
+    i2v_images = make_media_list_input("Image URLs or paths (one per line)", 2, 3)
     i2v_picked = ft.Text("", size=11)
 
     def pick_images(e):
@@ -742,9 +751,9 @@ def main(page: ft.Page):
     omni_aspect = make_aspect_ratio()
     omni_duration = make_duration()
     omni_4k = ft.Checkbox(label="Upscale to 4K", value=False)
-    omni_images = ft.TextField(label="Image URLs or paths (up to 9, one per line)", multiline=True, min_lines=2, max_lines=3, expand=True)
-    omni_videos = ft.TextField(label="Video URLs or paths (up to 3, one per line)", multiline=True, min_lines=1, max_lines=2, expand=True)
-    omni_audios = ft.TextField(label="Audio URLs or paths (up to 3, one per line)", multiline=True, min_lines=1, max_lines=2, expand=True)
+    omni_images = make_media_list_input("Image URLs or paths (up to 9, one per line)", 2, 3)
+    omni_videos = make_media_list_input("Video URLs or paths (up to 3, one per line)", 1, 2)
+    omni_audios = make_media_list_input("Audio URLs or paths (up to 3, one per line)", 1, 2)
     omni_img_picked = ft.Text("", size=11)
     omni_vid_picked = ft.Text("", size=11)
     omni_aud_picked = ft.Text("", size=11)
@@ -953,8 +962,8 @@ def main(page: ft.Page):
     ve_prompt = make_prompt("Edit this video to add slow motion...")
     ve_aspect = make_aspect_ratio()
     ve_quality = make_quality()
-    ve_videos = ft.TextField(label="Video URLs or paths (one per line)", multiline=True, min_lines=2, max_lines=3, expand=True)
-    ve_images = ft.TextField(label="Optional image URLs/paths (one per line)", multiline=True, min_lines=1, max_lines=2)
+    ve_videos = make_media_list_input("Video URLs or paths (one per line)", 2, 3)
+    ve_images = make_media_list_input("Optional image URLs/paths (one per line)", 1, 2)
     ve_watermark = ft.Checkbox(label="Remove watermark", value=False)
     ve_picked = ft.Text("", size=11)
 
