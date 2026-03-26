@@ -504,7 +504,7 @@ def main(page: ft.Page):
             title=ft.Row([
                 ft.Icon(ft.Icons.PERM_MEDIA, size=24),
                 ft.Text(title, size=18, weight=ft.FontWeight.BOLD),
-            ], spacing=8),
+            ], spacing=8, tight=True),
             content=ft.Container(
                 content=ft.Column([
                     ft.Row([
@@ -658,7 +658,7 @@ def main(page: ft.Page):
             t2v_prompt,
             ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=t2v_generate),
-        ], spacing=8),
+        ], spacing=8, tight=True),
         padding=15, data="t2v", alignment=ft.Alignment(0, -1),
     )
 
@@ -703,7 +703,7 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=i2v_generate),
-        ], spacing=8),
+        ], spacing=8, tight=True),
         padding=15, data="i2v", alignment=ft.Alignment(0, -1),
     )
 
@@ -915,7 +915,7 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([omni_aspect, omni_duration, omni_4k]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=omni_generate),
-        ], spacing=8),
+        ], spacing=8, tight=True),
         padding=15, data="omni", alignment=ft.Alignment(0, -1),
     )
 
@@ -964,7 +964,7 @@ def main(page: ft.Page):
             ve_images,
             ft.Row([ve_aspect, ve_quality, ve_watermark]),
             ft.Button(content="Edit Video", icon=ft.Icons.EDIT, on_click=ve_generate),
-        ], spacing=8),
+        ], spacing=8, tight=True),
         padding=15, data="ve", alignment=ft.Alignment(0, -1),
     )
 
@@ -992,7 +992,7 @@ def main(page: ft.Page):
             ext_prompt,
             ft.Row([ext_duration, ext_quality]),
             ft.Button(content="Extend Video", icon=ft.Icons.FAST_FORWARD, on_click=ext_generate),
-        ], spacing=8),
+        ], spacing=8, tight=True),
         padding=15, data="ext", alignment=ft.Alignment(0, -1),
     )
 
