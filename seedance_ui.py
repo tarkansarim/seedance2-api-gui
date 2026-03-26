@@ -1043,7 +1043,6 @@ def main(page: ft.Page):
                     controls=[t2v_tab, i2v_tab, omni_tab, ve_tab, ext_tab],
                 ),
             ],
-            expand=True,
         ),
     )
 
