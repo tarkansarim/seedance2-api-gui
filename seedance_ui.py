@@ -39,6 +39,8 @@ def main(page: ft.Page):
     page.title = "Seedance 2.0"
     page.window.width = page.width * 0.85 if page.width else 1700
     page.window.height = page.height * 0.85 if page.height else 1050
+    page.window.min_width = 900
+    page.window.min_height = 700
     page.padding = 20
     page.theme_mode = ft.ThemeMode.DARK
 
