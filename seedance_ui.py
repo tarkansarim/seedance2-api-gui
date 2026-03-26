@@ -1029,7 +1029,7 @@ def main(page: ft.Page):
                         ft.Tab(label="Video Edit", icon=ft.Icons.EDIT),
                         ft.Tab(label="Extend Video", icon=ft.Icons.FAST_FORWARD),
                     ],
-                    on_change=on_tab_change,
+                    on_click=on_tab_change,
                 ),
                 ft.TabBarView(
                     expand=True,
