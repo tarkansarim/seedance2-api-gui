@@ -40,7 +40,7 @@ def main(page: ft.Page):
     page.window.width = page.width * 0.85 if page.width else 1700
     page.window.height = page.height * 0.85 if page.height else 1050
     page.window.min_width = 900
-    page.window.min_height = 700
+    page.window.min_height = 1050
     page.padding = 20
     page.theme_mode = ft.ThemeMode.DARK
 
@@ -1007,7 +1007,7 @@ def main(page: ft.Page):
     }
 
     def on_tab_change(e):
-        idx = e.control.selected_index if hasattr(e.control, 'selected_index') else 0
+        idx = tab_bar.selected_index or 0
         needed = _tab_min_heights.get(idx, 700)
         page.window.min_height = needed
         if page.window.height < needed:
@@ -1015,6 +1015,17 @@ def main(page: ft.Page):
         page.update()
 
     # ==================== Main Layout ====================
+    tab_bar = ft.TabBar(
+        tabs=[
+            ft.Tab(label="Text to Video", icon=ft.Icons.TEXT_FIELDS),
+            ft.Tab(label="Image to Video", icon=ft.Icons.IMAGE),
+            ft.Tab(label="Omni Reference", icon=ft.Icons.AUTO_AWESOME),
+            ft.Tab(label="Video Edit", icon=ft.Icons.EDIT),
+            ft.Tab(label="Extend Video", icon=ft.Icons.FAST_FORWARD),
+        ],
+        on_click=on_tab_change,
+    )
+
     tabs = ft.Tabs(
         selected_index=0,
         length=5,
@@ -1022,16 +1033,7 @@ def main(page: ft.Page):
         content=ft.Column(
             expand=True,
             controls=[
-                ft.TabBar(
-                    tabs=[
-                        ft.Tab(label="Text to Video", icon=ft.Icons.TEXT_FIELDS),
-                        ft.Tab(label="Image to Video", icon=ft.Icons.IMAGE),
-                        ft.Tab(label="Omni Reference", icon=ft.Icons.AUTO_AWESOME),
-                        ft.Tab(label="Video Edit", icon=ft.Icons.EDIT),
-                        ft.Tab(label="Extend Video", icon=ft.Icons.FAST_FORWARD),
-                    ],
-                    on_click=on_tab_change,
-                ),
+                tab_bar,
                 ft.TabBarView(
                     expand=True,
                     controls=[t2v_tab, i2v_tab, omni_tab, ve_tab, ext_tab],
