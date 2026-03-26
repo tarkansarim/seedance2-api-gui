@@ -21,8 +21,8 @@ if not exist venv (
 call venv\Scripts\activate.bat
 
 echo Installing dependencies...
-pip install --upgrade pip -q
-pip install -r requirements.txt -q
+python -m pip install --upgrade pip -q
+python -m pip install -r requirements.txt -q
 
 if not exist output mkdir output
 
