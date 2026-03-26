@@ -655,13 +655,11 @@ def main(page: ft.Page):
 
     t2v_tab = ft.Container(
         content=ft.Column([
-            ft.Column([
-                t2v_prompt,
-                ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
-            ], spacing=12, scroll=ft.ScrollMode.AUTO, expand=True),
+            t2v_prompt,
+            ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=t2v_generate),
-        ], spacing=8, expand=True),
-        padding=15, expand=True,
+        ], spacing=12),
+        padding=15, data="t2v",
     )
 
     # ==================== TAB 2: Image to Video ====================
@@ -695,20 +693,18 @@ def main(page: ft.Page):
 
     i2v_tab = ft.Container(
         content=ft.Column([
-            ft.Column([
-                i2v_prompt,
-                ft.Row([
-                    i2v_images,
-                    ft.Column([
-                        ft.Button(content="Browse...", icon=ft.Icons.FOLDER_OPEN, on_click=pick_images),
-                        i2v_picked,
-                    ]),
-                ], spacing=10),
-                ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
-            ], spacing=12, scroll=ft.ScrollMode.AUTO, expand=True),
+            i2v_prompt,
+            ft.Row([
+                i2v_images,
+                ft.Column([
+                    ft.Button(content="Browse...", icon=ft.Icons.FOLDER_OPEN, on_click=pick_images),
+                    i2v_picked,
+                ]),
+            ], spacing=10),
+            ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=i2v_generate),
-        ], spacing=8, expand=True),
-        padding=15, expand=True,
+        ], spacing=12),
+        padding=15, data="i2v",
     )
 
     # ==================== TAB 3: Omni Reference ====================
@@ -895,10 +891,9 @@ def main(page: ft.Page):
 
     omni_tab = ft.Container(
         content=ft.Column([
-            ft.Column([
-                omni_prompt,
-                _ac_popup,
-                ft.Row([
+            omni_prompt,
+            _ac_popup,
+            ft.Row([
                 omni_images,
                 ft.Column([
                     ft.Button(content="Browse images...", icon=ft.Icons.IMAGE, on_click=pick_omni_images),
@@ -919,11 +914,10 @@ def main(page: ft.Page):
                     omni_aud_picked,
                 ]),
             ], spacing=10),
-                ft.Row([omni_aspect, omni_duration, omni_4k]),
-            ], spacing=12, scroll=ft.ScrollMode.AUTO, expand=True),
+            ft.Row([omni_aspect, omni_duration, omni_4k]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=omni_generate),
-        ], spacing=8, expand=True),
-        padding=15, expand=True,
+        ], spacing=12),
+        padding=15, data="omni",
     )
 
     # ==================== TAB 4: Video Edit ====================
@@ -960,21 +954,19 @@ def main(page: ft.Page):
 
     ve_tab = ft.Container(
         content=ft.Column([
-            ft.Column([
-                ve_prompt,
-                ft.Row([
-                    ve_videos,
-                    ft.Column([
-                        ft.Button(content="Browse videos...", icon=ft.Icons.VIDEO_FILE, on_click=pick_videos),
-                        ve_picked,
-                    ]),
-                ], spacing=10),
-                ve_images,
-                ft.Row([ve_aspect, ve_quality, ve_watermark]),
-            ], spacing=12, scroll=ft.ScrollMode.AUTO, expand=True),
+            ve_prompt,
+            ft.Row([
+                ve_videos,
+                ft.Column([
+                    ft.Button(content="Browse videos...", icon=ft.Icons.VIDEO_FILE, on_click=pick_videos),
+                    ve_picked,
+                ]),
+            ], spacing=10),
+            ve_images,
+            ft.Row([ve_aspect, ve_quality, ve_watermark]),
             ft.Button(content="Edit Video", icon=ft.Icons.EDIT, on_click=ve_generate),
-        ], spacing=8, expand=True),
-        padding=15, expand=True,
+        ], spacing=12),
+        padding=15, data="ve",
     )
 
     # ==================== TAB 4: Extend Video ====================
@@ -997,15 +989,29 @@ def main(page: ft.Page):
 
     ext_tab = ft.Container(
         content=ft.Column([
-            ft.Column([
-                ext_request_id,
-                ext_prompt,
-                ft.Row([ext_duration, ext_quality]),
-            ], spacing=12, scroll=ft.ScrollMode.AUTO, expand=True),
+            ext_request_id,
+            ext_prompt,
+            ft.Row([ext_duration, ext_quality]),
             ft.Button(content="Extend Video", icon=ft.Icons.FAST_FORWARD, on_click=ext_generate),
-        ], spacing=8, expand=True),
-        padding=15, expand=True,
+        ], spacing=12),
+        padding=15, data="ext",
     )
+
+    # Minimum heights per tab to show all controls without scrolling
+    _tab_min_heights = {
+        0: 700,   # T2V: prompt + options + button
+        1: 750,   # I2V: prompt + images + options + button
+        2: 900,   # Omni: prompt + images + videos + audio + options + button
+        3: 800,   # Video Edit: prompt + videos + images + options + button
+        4: 700,   # Extend: request id + prompt + options + button
+    }
+
+    def on_tab_change(e):
+        idx = e.control.selected_index if hasattr(e.control, 'selected_index') else 0
+        needed = _tab_min_heights.get(idx, 700)
+        if page.window.height < needed:
+            page.window.height = needed
+            page.update()
 
     # ==================== Main Layout ====================
     tabs = ft.Tabs(
@@ -1023,6 +1029,7 @@ def main(page: ft.Page):
                         ft.Tab(label="Video Edit", icon=ft.Icons.EDIT),
                         ft.Tab(label="Extend Video", icon=ft.Icons.FAST_FORWARD),
                     ],
+                    on_change=on_tab_change,
                 ),
                 ft.TabBarView(
                     expand=True,
