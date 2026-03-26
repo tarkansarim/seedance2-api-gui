@@ -156,7 +156,7 @@ def main(page: ft.Page):
 
     # Shared controls
     log_field = ft.TextField(
-        multiline=True, read_only=True, min_lines=4, max_lines=4,
+        multiline=True, read_only=True, min_lines=3, max_lines=3,
         expand=True, text_size=11, border_color=ft.Colors.OUTLINE,
     )
     active_jobs_list = ft.ListView(spacing=5, height=200)
@@ -1020,12 +1020,9 @@ def main(page: ft.Page):
         ),
     )
 
-    # Left side: tabs + log
+    # Left side: tabs only
     left_panel = ft.Column([
         tabs,
-        ft.Divider(),
-        ft.Text("Log", size=12, weight=ft.FontWeight.BOLD),
-        log_field,
     ], expand=2)
 
     # Right side: preview + active jobs + history
@@ -1056,6 +1053,14 @@ def main(page: ft.Page):
         ], height=90),
         ft.Divider(),
         ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True),
+        ft.Divider(),
+        ft.Container(
+            content=ft.Row([
+                ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
+                ft.Container(content=log_field, expand=True),
+            ], vertical_alignment=ft.CrossAxisAlignment.START, spacing=10),
+            height=80,
+        ),
     )
 
     # Init API
