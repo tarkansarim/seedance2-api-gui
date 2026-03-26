@@ -32,9 +32,12 @@ if not exist .env (
     echo Created .env file. Edit it with your MuAPI key, or set it in the app's Settings.
 )
 
-:: Create Windows shortcut on Desktop
+:: Create Windows shortcut on Desktop (handle OneDrive redirection)
 echo Creating desktop shortcut...
-set SHORTCUT=%USERPROFILE%\Desktop\Seedance 2.0.lnk
+for /f "tokens=2*" %%a in ('reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" /v Desktop 2^>nul') do set DESKTOP_DIR=%%b
+call set DESKTOP_DIR=%DESKTOP_DIR%
+if not defined DESKTOP_DIR set DESKTOP_DIR=%USERPROFILE%\Desktop
+set SHORTCUT=%DESKTOP_DIR%\Seedance 2.0.lnk
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%SHORTCUT%'); $s.TargetPath = '%APP_DIR%\run.bat'; $s.WorkingDirectory = '%APP_DIR%'; $s.IconLocation = '%APP_DIR%\icon.png'; $s.Description = 'Seedance 2.0 Video Generation GUI'; $s.Save()"
 if exist "%SHORTCUT%" (
     echo Desktop shortcut created.
