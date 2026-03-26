@@ -1009,9 +1009,10 @@ def main(page: ft.Page):
     def on_tab_change(e):
         idx = e.control.selected_index if hasattr(e.control, 'selected_index') else 0
         needed = _tab_min_heights.get(idx, 700)
+        page.window.min_height = needed
         if page.window.height < needed:
             page.window.height = needed
-            page.update()
+        page.update()
 
     # ==================== Main Layout ====================
     tabs = ft.Tabs(
