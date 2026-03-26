@@ -204,6 +204,19 @@ def main(page: ft.Page):
         log_field.value = (log_field.value or "") + msg + "\n"
         page.update()
 
+    def log_layout_size(label, e):
+        log_debug(f"layout[{label}] size={e.width}x{e.height}")
+
+    def on_window_event(e):
+        log_debug(
+            "window event=%s page=%sx%s window=%sx%s",
+            e.type,
+            page.width,
+            page.height,
+            page.window.width,
+            page.window.height,
+        )
+
     # --- Persistent history ---
     history_file = os.path.join(os.path.dirname(__file__), "history.json")
 
@@ -1060,7 +1073,18 @@ def main(page: ft.Page):
         history_list,
     ], expand=1, width=400, tight=True)
 
+    left_panel.on_size_change = lambda e: log_layout_size("left_panel", e)
+    right_panel.on_size_change = lambda e: log_layout_size("right_panel", e)
+    log_panel.on_size_change = lambda e: log_layout_size("log_panel", e)
+    log_field.on_size_change = lambda e: log_layout_size("log_field", e)
+
     page.overlay.append(settings_dialog)
+    main_layout_row = ft.Row(
+        [left_panel, ft.VerticalDivider(), right_panel],
+        expand=True,
+        vertical_alignment=ft.CrossAxisAlignment.STRETCH,
+    )
+    main_layout_row.on_size_change = lambda e: log_layout_size("main_layout_row", e)
     page.add(
         ft.Stack([
             ft.Container(
@@ -1076,10 +1100,12 @@ def main(page: ft.Page):
             ),
         ], height=90),
         ft.Divider(),
-        ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True, vertical_alignment=ft.CrossAxisAlignment.STRETCH),
+        main_layout_row,
     )
 
     # Init API
+    page.on_resize = lambda e: log_debug(f"page resize: {e.width}x{e.height}")
+    page.window.on_event = on_window_event
     try:
         api = SeedanceAPI()
         log("API initialized successfully")
