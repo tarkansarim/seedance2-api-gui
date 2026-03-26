@@ -1042,7 +1042,7 @@ def main(page: ft.Page):
         *all_tabs,
         ft.Divider(),
         ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
-        ft.Container(content=log_field, expand=True),
+        log_field,
     ], expand=2)
 
     # Right side: preview + active jobs + history
