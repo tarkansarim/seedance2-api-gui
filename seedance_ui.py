@@ -1006,22 +1006,27 @@ def main(page: ft.Page):
         4: 700,    # Extend: request id + prompt + options + button
     }
 
+    # Tab content heights (just the tab area, not the full window)
+    _tab_heights = {
+        0: 350,   # T2V
+        1: 400,   # I2V
+        2: 600,   # Omni
+        3: 450,   # Video Edit
+        4: 350,   # Extend
+    }
+
     def on_tab_change(e):
         idx = int(e.data) if e.data is not None else 0
-        needed = _tab_min_heights.get(idx, 700)
-        page.window.min_height = needed
-        if page.window.height < needed:
-            page.window.height = needed
+        tabs.height = _tab_heights.get(idx, 400)
         page.update()
 
     # ==================== Main Layout ====================
     tabs = ft.Tabs(
         selected_index=0,
         length=5,
-        expand=True,
         on_change=on_tab_change,
+        height=600,
         content=ft.Column(
-            expand=True,
             controls=[
                 ft.TabBar(
                     tabs=[
@@ -1037,17 +1042,16 @@ def main(page: ft.Page):
                     controls=[t2v_tab, i2v_tab, omni_tab, ve_tab, ext_tab],
                 ),
             ],
+            expand=True,
         ),
     )
 
-    # Left side: tabs + log
+    # Left side: tabs + log (log expands to fill remaining space)
     left_panel = ft.Column([
         tabs,
         ft.Divider(),
-        ft.Row([
-            ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
-            ft.Container(content=log_field, expand=True),
-        ], vertical_alignment=ft.CrossAxisAlignment.START, spacing=10),
+        ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
+        ft.Container(content=log_field, expand=True),
     ], expand=2)
 
     # Right side: preview + active jobs + history
