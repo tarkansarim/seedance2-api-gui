@@ -160,7 +160,7 @@ def main(page: ft.Page):
     # Shared controls
     log_field = ft.TextField(
         multiline=True, read_only=True, min_lines=3, max_lines=3,
-        expand=True, text_size=11, border_color=ft.Colors.OUTLINE,
+        text_size=11, border_color=ft.Colors.OUTLINE,
     )
     active_jobs_list = ft.ListView(spacing=5, height=200)
     history_list = ft.ListView(expand=True, spacing=5)
