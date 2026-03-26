@@ -997,15 +997,6 @@ def main(page: ft.Page):
         padding=15, data="ext", alignment=ft.Alignment(0, -1),
     )
 
-    # Minimum heights per tab to show all controls without scrolling
-    _tab_min_heights = {
-        0: 700,    # T2V: prompt + options + button
-        1: 780,    # I2V: prompt + images + options + button
-        2: 1050,   # Omni: prompt + images + videos + audio + options + button
-        3: 830,    # Video Edit: prompt + videos + images + options + button
-        4: 700,    # Extend: request id + prompt + options + button
-    }
-
     # Tab content heights (just the tab area, not the full window)
     _tab_heights = {
         0: 350,   # T2V
@@ -1025,7 +1016,7 @@ def main(page: ft.Page):
         selected_index=0,
         length=5,
         on_change=on_tab_change,
-        expand=True,
+        height=350,
         content=ft.Column(
             expand=True,
             controls=[
