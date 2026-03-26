@@ -42,6 +42,7 @@ def main(page: ft.Page):
     page.window.min_width = 900
     page.window.min_height = 1050
     page.padding = 20
+    page.vertical_alignment = ft.MainAxisAlignment.START
     page.theme_mode = ft.ThemeMode.DARK
 
     # State
