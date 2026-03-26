@@ -45,6 +45,114 @@ def main(page: ft.Page):
     # State
     api = None
     jobs = []  # list of job dicts
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+
+    def mask_key(key):
+        """Show first 4 and last 4 chars, mask the rest."""
+        if not key or len(key) <= 10:
+            return key or ""
+        return key[:4] + "*" * (len(key) - 8) + key[-4:]
+
+    def load_api_key():
+        """Load API key from .env file."""
+        if os.path.exists(env_path):
+            with open(env_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("MUAPI_API_KEY="):
+                        return line.split("=", 1)[1].strip().strip('"').strip("'")
+        return ""
+
+    def save_api_key(key):
+        """Save API key to .env file."""
+        lines = []
+        found = False
+        if os.path.exists(env_path):
+            with open(env_path) as f:
+                for line in f:
+                    if line.strip().startswith("MUAPI_API_KEY="):
+                        lines.append(f"MUAPI_API_KEY={key}\n")
+                        found = True
+                    else:
+                        lines.append(line)
+        if not found:
+            lines.append(f"MUAPI_API_KEY={key}\n")
+        with open(env_path, "w") as f:
+            f.writelines(lines)
+
+    current_key = load_api_key()
+    api_key_display = ft.Text(mask_key(current_key) if current_key else "No API key set", size=12,
+                               color=ft.Colors.ON_SURFACE if current_key else ft.Colors.ERROR)
+    api_key_input = ft.TextField(label="Paste API key", password=True, can_reveal_password=True,
+                                  width=400, text_size=13, visible=False)
+    api_key_edit_btn = ft.TextButton("Edit")
+    api_key_save_btn = ft.TextButton("Save", visible=False)
+    api_key_cancel_btn = ft.TextButton("Cancel", visible=False)
+
+    def toggle_key_edit(e):
+        api_key_input.visible = True
+        api_key_save_btn.visible = True
+        api_key_cancel_btn.visible = True
+        api_key_edit_btn.visible = False
+        api_key_input.value = ""
+        page.update()
+
+    def save_key_click(e):
+        nonlocal api, current_key
+        new_key = (api_key_input.value or "").strip()
+        if new_key:
+            save_api_key(new_key)
+            current_key = new_key
+            os.environ["MUAPI_API_KEY"] = new_key
+            api_key_display.value = mask_key(new_key)
+            api_key_display.color = ft.Colors.ON_SURFACE
+            try:
+                api = SeedanceAPI()
+                log("API re-initialized with new key")
+            except Exception as ex:
+                log(f"API init failed with new key: {ex}")
+        api_key_input.visible = False
+        api_key_save_btn.visible = False
+        api_key_cancel_btn.visible = False
+        api_key_edit_btn.visible = True
+        page.update()
+
+    def cancel_key_edit(e):
+        api_key_input.visible = False
+        api_key_save_btn.visible = False
+        api_key_cancel_btn.visible = False
+        api_key_edit_btn.visible = True
+        page.update()
+
+    api_key_edit_btn.on_click = toggle_key_edit
+    api_key_save_btn.on_click = save_key_click
+    api_key_cancel_btn.on_click = cancel_key_edit
+
+    api_key_section = ft.Column([
+        ft.Row([
+            ft.Icon(ft.Icons.KEY, size=16),
+            ft.Text("MuAPI Key:", size=12, weight=ft.FontWeight.BOLD),
+            api_key_display,
+            api_key_edit_btn,
+        ]),
+        ft.Row([api_key_input, api_key_save_btn, api_key_cancel_btn]),
+    ], spacing=8)
+
+    def open_settings(e):
+        settings_dialog.open = True
+        page.update()
+
+    def close_settings(e):
+        settings_dialog.open = False
+        page.update()
+
+    settings_dialog = ft.AlertDialog(
+        title=ft.Text("Settings"),
+        content=api_key_section,
+        actions=[ft.TextButton("Close", on_click=close_settings)],
+    )
+
+    settings_btn = ft.IconButton(ft.Icons.SETTINGS, tooltip="Settings", on_click=open_settings)
 
     # Shared controls
     log_field = ft.TextField(
@@ -931,12 +1039,21 @@ def main(page: ft.Page):
         history_list,
     ], expand=1, width=400)
 
+    page.overlay.append(settings_dialog)
     page.add(
-        ft.Container(
-            content=ft.Image(src=os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.png"), height=60),
-            alignment=ft.Alignment(0, 0),
-            padding=ft.Padding(top=15, bottom=15, left=0, right=0),
-        ),
+        ft.Stack([
+            ft.Container(
+                content=ft.Image(src=os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.png"), height=60),
+                alignment=ft.Alignment(0, 0),
+                expand=True,
+                padding=ft.Padding(top=15, bottom=15, left=0, right=0),
+            ),
+            ft.Container(
+                content=settings_btn,
+                alignment=ft.Alignment(1, 0),
+                expand=True,
+            ),
+        ], height=90),
         ft.Divider(),
         ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True),
     )
