@@ -659,7 +659,7 @@ def main(page: ft.Page):
             ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=t2v_generate),
         ], spacing=8),
-        padding=15, data="t2v",
+        padding=15, data="t2v", alignment=ft.Alignment(0, -1),
     )
 
     # ==================== TAB 2: Image to Video ====================
@@ -704,7 +704,7 @@ def main(page: ft.Page):
             ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=i2v_generate),
         ], spacing=8),
-        padding=15, data="i2v",
+        padding=15, data="i2v", alignment=ft.Alignment(0, -1),
     )
 
     # ==================== TAB 3: Omni Reference ====================
@@ -916,7 +916,7 @@ def main(page: ft.Page):
             ft.Row([omni_aspect, omni_duration, omni_4k]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=omni_generate),
         ], spacing=8),
-        padding=15, data="omni",
+        padding=15, data="omni", alignment=ft.Alignment(0, -1),
     )
 
     # ==================== TAB 4: Video Edit ====================
@@ -965,7 +965,7 @@ def main(page: ft.Page):
             ft.Row([ve_aspect, ve_quality, ve_watermark]),
             ft.Button(content="Edit Video", icon=ft.Icons.EDIT, on_click=ve_generate),
         ], spacing=8),
-        padding=15, data="ve",
+        padding=15, data="ve", alignment=ft.Alignment(0, -1),
     )
 
     # ==================== TAB 4: Extend Video ====================
@@ -993,7 +993,7 @@ def main(page: ft.Page):
             ft.Row([ext_duration, ext_quality]),
             ft.Button(content="Extend Video", icon=ft.Icons.FAST_FORWARD, on_click=ext_generate),
         ], spacing=8),
-        padding=15, data="ext",
+        padding=15, data="ext", alignment=ft.Alignment(0, -1),
     )
 
     # Minimum heights per tab to show all controls without scrolling
