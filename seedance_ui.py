@@ -997,49 +997,49 @@ def main(page: ft.Page):
         padding=15, data="ext", alignment=ft.Alignment(0, -1),
     )
 
-    # Tab content heights (just the tab area, not the full window)
-    _tab_heights = {
-        0: 300,   # T2V: prompt + options + button
-        1: 370,   # I2V: prompt + images row + options + button
-        2: 550,   # Omni: prompt + 3 media rows + options + button
-        3: 420,   # Video Edit: prompt + videos + images + options + button
-        4: 300,   # Extend: request id + prompt + options + button
-    }
+    # Tab panels - only one visible at a time
+    all_tabs = [t2v_tab, i2v_tab, omni_tab, ve_tab, ext_tab]
+    tab_labels = [
+        ("Text to Video", ft.Icons.TEXT_FIELDS),
+        ("Image to Video", ft.Icons.IMAGE),
+        ("Omni Reference", ft.Icons.AUTO_AWESOME),
+        ("Video Edit", ft.Icons.EDIT),
+        ("Extend Video", ft.Icons.FAST_FORWARD),
+    ]
+    for t in all_tabs:
+        t.visible = False
+    all_tabs[0].visible = True
 
-    def on_tab_change(e):
-        idx = int(e.data) if e.data is not None else 0
-        tabs.height = _tab_heights.get(idx, 400)
-        page.update()
+    tab_buttons = []
+    def switch_tab(idx):
+        def handler(e):
+            for i, t in enumerate(all_tabs):
+                t.visible = (i == idx)
+            for i, b in enumerate(tab_buttons):
+                b.style = ft.ButtonStyle(
+                    bgcolor=ft.Colors.PRIMARY if i == idx else None,
+                    color=ft.Colors.ON_PRIMARY if i == idx else None,
+                )
+            page.update()
+        return handler
 
-    # ==================== Main Layout ====================
-    tabs = ft.Tabs(
-        selected_index=0,
-        length=5,
-        on_change=on_tab_change,
-        height=300,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.TabBar(
-                    tabs=[
-                        ft.Tab(label="Text to Video", icon=ft.Icons.TEXT_FIELDS),
-                        ft.Tab(label="Image to Video", icon=ft.Icons.IMAGE),
-                        ft.Tab(label="Omni Reference", icon=ft.Icons.AUTO_AWESOME),
-                        ft.Tab(label="Video Edit", icon=ft.Icons.EDIT),
-                        ft.Tab(label="Extend Video", icon=ft.Icons.FAST_FORWARD),
-                    ],
-                ),
-                ft.TabBarView(
-                    expand=True,
-                    controls=[t2v_tab, i2v_tab, omni_tab, ve_tab, ext_tab],
-                ),
-            ],
-        ),
-    )
+    for i, (label, icon) in enumerate(tab_labels):
+        btn = ft.Button(
+            content=label, icon=icon, on_click=switch_tab(i),
+            style=ft.ButtonStyle(
+                bgcolor=ft.Colors.PRIMARY if i == 0 else None,
+                color=ft.Colors.ON_PRIMARY if i == 0 else None,
+            ),
+        )
+        tab_buttons.append(btn)
 
-    # Left side: tabs + log (log expands to fill remaining space)
+    tab_bar_row = ft.Row(tab_buttons, spacing=4)
+
+    # Left side: tab bar + tab panels + log
     left_panel = ft.Column([
-        tabs,
+        tab_bar_row,
+        ft.Divider(),
+        *all_tabs,
         ft.Divider(),
         ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
         ft.Container(content=log_field, expand=True),
