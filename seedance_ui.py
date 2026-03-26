@@ -999,11 +999,11 @@ def main(page: ft.Page):
 
     # Tab content heights (just the tab area, not the full window)
     _tab_heights = {
-        0: 350,   # T2V
-        1: 400,   # I2V
-        2: 600,   # Omni
-        3: 450,   # Video Edit
-        4: 350,   # Extend
+        0: 300,   # T2V: prompt + options + button
+        1: 370,   # I2V: prompt + images row + options + button
+        2: 550,   # Omni: prompt + 3 media rows + options + button
+        3: 420,   # Video Edit: prompt + videos + images + options + button
+        4: 300,   # Extend: request id + prompt + options + button
     }
 
     def on_tab_change(e):
@@ -1016,7 +1016,7 @@ def main(page: ft.Page):
         selected_index=0,
         length=5,
         on_change=on_tab_change,
-        height=350,
+        height=300,
         content=ft.Column(
             expand=True,
             controls=[
