@@ -6,10 +6,21 @@ import uuid
 import subprocess
 import logging
 import flet as ft
+import platform
 import flet_video as ftv
 
 sys.path.insert(0, os.path.dirname(__file__))
 from seedance_api import SeedanceAPI
+
+
+def open_file(path):
+    """Open a file with the system default application (cross-platform)."""
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 _log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seedance_debug.log")
 _logger = logging.getLogger("seedance_ui")
@@ -73,7 +84,7 @@ def main(page: ft.Page):
             ft.Button(
                 content="Fullscreen",
                 icon=ft.Icons.FULLSCREEN,
-                on_click=lambda e: subprocess.Popen(["xdg-open", current_preview_path[0]]),
+                on_click=lambda e: open_file(current_preview_path[0]),
             ),
         ], expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         page.update()
@@ -113,7 +124,7 @@ def main(page: ft.Page):
                 ft.Text(f"[{m}] {p[:50]}...", size=11, weight=ft.FontWeight.BOLD),
                 ft.Row([
                     ft.TextButton("Play", icon=ft.Icons.PLAY_CIRCLE, on_click=play_in_preview),
-                    ft.TextButton("Open", on_click=lambda e, lp=path: subprocess.Popen(["xdg-open", lp]) if lp else None) if path else ft.Container(),
+                    ft.TextButton("Open", on_click=lambda e, lp=path: open_file(lp) if lp else None) if path else ft.Container(),
                     ft.TextButton("Copy URL", on_click=lambda e, u=url: page.set_clipboard(u)) if url else ft.Container(),
                 ], spacing=0),
             ], spacing=2),
