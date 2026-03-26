@@ -1,0 +1,8 @@
+.env
+__pycache__/
+venv/
+output/*.mp4
+output/*.thumb.png
+*.pyc
+seedance_debug.log
+history.json

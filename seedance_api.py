@@ -1,6 +1,8 @@
 import os
+import tempfile
 import requests
 import time
+from PIL import Image
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -102,18 +104,115 @@ class SeedanceAPI:
         }
         return self._post_request(endpoint, payload)
 
+    def omni_reference(self, prompt, images=None, video_urls=None, audio_urls=None,
+                       aspect_ratio="16:9", duration=5, upscale_4k=False):
+        """
+        Submits a Seedance 2.0 Omni Reference generation task.
+        Combines text, images, videos, and audio as multi-modal references.
+
+        Use @image1-@image9, @video1-@video3, @audio1-@audio3 in the prompt
+        to reference each asset.
+
+        :param prompt: Text prompt with @imageN/@videoN/@audioN references.
+        :param images: List of up to 9 image URLs or local paths.
+        :param video_urls: List of up to 3 video URLs or local paths.
+        :param audio_urls: List of up to 3 audio URLs or local paths.
+        :param aspect_ratio: Video aspect ratio.
+        :param duration: Video duration in seconds (4-15).
+        :param upscale_4k: Upscale output to 4K resolution.
+        :return: JSON response from the Seedance 2.0 API.
+        """
+        endpoint = f"{self.base_url}/seedance-2.0-omni-reference"
+        payload = {
+            "prompt": prompt,
+            "aspect_ratio": aspect_ratio,
+            "duration": duration,
+        }
+        if upscale_4k:
+            payload["upscale_resolution"] = "4k"
+        # Resolve and add numbered image fields (image_1 .. image_9)
+        if images:
+            resolved_imgs = self._resolve_images(images)
+            for i, url in enumerate(resolved_imgs[:9], 1):
+                payload[f"image_{i}"] = url
+        # Resolve and add numbered video fields (video_url_1 .. video_url_3)
+        if video_urls:
+            resolved_vids = self._resolve_images(video_urls)
+            for i, url in enumerate(resolved_vids[:3], 1):
+                payload[f"video_url_{i}"] = url
+        # Resolve and add numbered audio fields (audio_url_1 .. audio_url_3)
+        if audio_urls:
+            resolved_auds = self._resolve_images(audio_urls)
+            for i, url in enumerate(resolved_auds[:3], 1):
+                payload[f"audio_url_{i}"] = url
+
+        response = requests.post(endpoint, json=payload, headers=self.headers)
+        response.raise_for_status()
+        return response.json()
+
+    @staticmethod
+    def _compress_image(file_path, max_bytes=9_500_000):
+        """
+        If an image file exceeds max_bytes, convert to JPEG starting at
+        max quality and step down until it fits. No resolution change.
+        Returns the original path if already small enough, or a temp path.
+        """
+        IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif"}
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext not in IMAGE_EXTS:
+            return file_path
+
+        if os.path.getsize(file_path) <= max_bytes:
+            return file_path
+
+        img = Image.open(file_path)
+        if img.mode == "RGBA":
+            img = img.convert("RGB")
+
+        name = os.path.basename(file_path)
+        tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+        tmp.close()
+
+        for quality in range(98, 10, -5):
+            img.save(tmp.name, format="JPEG", quality=quality)
+            size = os.path.getsize(tmp.name)
+            if size <= max_bytes:
+                print(f"Compressed {name}: {os.path.getsize(file_path)/1e6:.1f}MB → {size/1e6:.1f}MB (q={quality})")
+                return tmp.name
+
+        # Last resort: quality 10 still too big, shouldn't happen
+        print(f"Warning: {name} still {size/1e6:.1f}MB after max compression")
+        return tmp.name
+
     def upload_file(self, file_path):
         """
         Uploads a local file to MuAPI and returns a hosted URL.
-        Use this to convert local images/videos to URLs for the API.
+        Auto-downscales images over 10MB using Lanczos resampling.
         """
-        endpoint = f"{self.base_url}/upload_file"
-        headers = {"x-api-key": self.api_key}
-        with open(file_path, "rb") as f:
-            files = {"file": (os.path.basename(file_path), f)}
-            response = requests.post(endpoint, files=files, headers=headers)
-        response.raise_for_status()
-        return response.json().get("url") or response.json().get("file_url")
+        upload_path = self._compress_image(file_path)
+        try:
+            endpoint = f"{self.base_url}/upload_file"
+            headers = {"x-api-key": self.api_key}
+            last_err = None
+            for attempt in range(3):
+                with open(upload_path, "rb") as f:
+                    # Keep original filename for the API
+                    fname = os.path.basename(file_path)
+                    if upload_path != file_path:
+                        fname = os.path.splitext(fname)[0] + ".jpg"
+                    files = {"file": (fname, f)}
+                    response = requests.post(endpoint, files=files, headers=headers)
+                if response.ok:
+                    return response.json().get("url") or response.json().get("file_url")
+                last_err = f"{response.status_code}: {response.text}"
+                print(f"upload_file attempt {attempt+1} FAILED for {file_path} — {last_err}", flush=True)
+                if response.status_code < 500 and response.status_code != 429:
+                    break
+                time.sleep(2)
+            raise Exception(f"upload_file failed for {os.path.basename(file_path)}: {last_err}")
+        finally:
+            if upload_path != file_path:
+                os.unlink(upload_path)  # clean up temp file
 
     def _resolve_images(self, images_list):
         """
