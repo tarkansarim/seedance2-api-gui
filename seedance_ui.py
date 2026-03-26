@@ -157,6 +157,18 @@ def main(page: ft.Page):
 
     settings_btn = ft.IconButton(ft.Icons.SETTINGS, tooltip="Settings", on_click=open_settings)
 
+    def refresh_layout(_=None):
+        page.update()
+
+    def on_window_event(e):
+        if e.type in {
+            ft.WindowEventType.MOVED,
+            ft.WindowEventType.RESIZED,
+            ft.WindowEventType.RESTORE,
+            ft.WindowEventType.UNMAXIMIZE,
+        }:
+            refresh_layout()
+
     # Shared controls
     log_field = ft.TextField(
         multiline=True, read_only=True, min_lines=3, max_lines=3,
@@ -1076,6 +1088,8 @@ def main(page: ft.Page):
     )
 
     # Init API
+    page.on_resize = refresh_layout
+    page.window.on_event = on_window_event
     try:
         api = SeedanceAPI()
         log("API initialized successfully")
