@@ -1072,7 +1072,7 @@ def main(page: ft.Page):
             ),
         ], height=90),
         ft.Divider(),
-        ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True),
+        ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True, vertical_alignment=ft.CrossAxisAlignment.START),
     )
 
     # Init API
