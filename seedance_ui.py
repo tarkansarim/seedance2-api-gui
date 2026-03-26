@@ -1085,23 +1085,26 @@ def main(page: ft.Page):
         vertical_alignment=ft.CrossAxisAlignment.STRETCH,
     )
     main_layout_row.on_size_change = lambda e: log_layout_size("main_layout_row", e)
-    page.add(
-        ft.Stack([
-            ft.Container(
-                content=ft.Image(src=os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.png"), height=60),
-                alignment=ft.Alignment(0, 0),
-                expand=True,
-                padding=ft.Padding(top=15, bottom=15, left=0, right=0),
-            ),
-            ft.Container(
-                content=settings_btn,
-                alignment=ft.Alignment(1, 0),
-                expand=True,
-            ),
-        ], height=90),
-        ft.Divider(),
-        main_layout_row,
+    header_shell = ft.Stack([
+        ft.Container(
+            content=ft.Image(src=os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.png"), height=60),
+            alignment=ft.Alignment(0, 0),
+            expand=True,
+            padding=ft.Padding(top=15, bottom=15, left=0, right=0),
+        ),
+        ft.Container(
+            content=settings_btn,
+            alignment=ft.Alignment(1, 0),
+            expand=True,
+        ),
+    ], height=90)
+    root_layout = ft.Column(
+        [header_shell, ft.Divider(), main_layout_row],
+        expand=True,
+        spacing=0,
     )
+    root_layout.on_size_change = lambda e: log_layout_size("root_layout", e)
+    page.add(root_layout)
 
     # Init API
     page.on_resize = lambda e: log_debug(f"page resize: {e.width}x{e.height}")
