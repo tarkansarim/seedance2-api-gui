@@ -1040,9 +1040,14 @@ def main(page: ft.Page):
         ),
     )
 
-    # Left side: tabs only
+    # Left side: tabs + log
     left_panel = ft.Column([
         tabs,
+        ft.Divider(),
+        ft.Row([
+            ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
+            ft.Container(content=log_field, expand=True),
+        ], vertical_alignment=ft.CrossAxisAlignment.START, spacing=10),
     ], expand=2)
 
     # Right side: preview + active jobs + history
@@ -1073,14 +1078,6 @@ def main(page: ft.Page):
         ], height=90),
         ft.Divider(),
         ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True),
-        ft.Divider(),
-        ft.Container(
-            content=ft.Row([
-                ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
-                ft.Container(content=log_field, expand=True),
-            ], vertical_alignment=ft.CrossAxisAlignment.START, spacing=10),
-            height=80,
-        ),
     )
 
     # Init API
