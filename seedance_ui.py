@@ -1007,7 +1007,7 @@ def main(page: ft.Page):
     }
 
     def on_tab_change(e):
-        idx = tab_bar.selected_index or 0
+        idx = int(e.data) if e.data is not None else 0
         needed = _tab_min_heights.get(idx, 700)
         page.window.min_height = needed
         if page.window.height < needed:
@@ -1015,25 +1015,23 @@ def main(page: ft.Page):
         page.update()
 
     # ==================== Main Layout ====================
-    tab_bar = ft.TabBar(
-        tabs=[
-            ft.Tab(label="Text to Video", icon=ft.Icons.TEXT_FIELDS),
-            ft.Tab(label="Image to Video", icon=ft.Icons.IMAGE),
-            ft.Tab(label="Omni Reference", icon=ft.Icons.AUTO_AWESOME),
-            ft.Tab(label="Video Edit", icon=ft.Icons.EDIT),
-            ft.Tab(label="Extend Video", icon=ft.Icons.FAST_FORWARD),
-        ],
-        on_click=on_tab_change,
-    )
-
     tabs = ft.Tabs(
         selected_index=0,
         length=5,
         expand=True,
+        on_change=on_tab_change,
         content=ft.Column(
             expand=True,
             controls=[
-                tab_bar,
+                ft.TabBar(
+                    tabs=[
+                        ft.Tab(label="Text to Video", icon=ft.Icons.TEXT_FIELDS),
+                        ft.Tab(label="Image to Video", icon=ft.Icons.IMAGE),
+                        ft.Tab(label="Omni Reference", icon=ft.Icons.AUTO_AWESOME),
+                        ft.Tab(label="Video Edit", icon=ft.Icons.EDIT),
+                        ft.Tab(label="Extend Video", icon=ft.Icons.FAST_FORWARD),
+                    ],
+                ),
                 ft.TabBarView(
                     expand=True,
                     controls=[t2v_tab, i2v_tab, omni_tab, ve_tab, ext_tab],
