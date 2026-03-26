@@ -672,8 +672,9 @@ def main(page: ft.Page):
             t2v_prompt,
             ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=t2v_generate),
-        ], spacing=8),
+        ], spacing=8, expand=True),
         padding=15, data="t2v", alignment=ft.Alignment(0, -1),
+        expand=True,
     )
 
     # ==================== TAB 2: Image to Video ====================
@@ -717,8 +718,9 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=i2v_generate),
-        ], spacing=8),
+        ], spacing=8, expand=True),
         padding=15, data="i2v", alignment=ft.Alignment(0, -1),
+        expand=True,
     )
 
     # ==================== TAB 3: Omni Reference ====================
@@ -929,8 +931,9 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([omni_aspect, omni_duration, omni_4k]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=omni_generate),
-        ], spacing=8),
+        ], spacing=8, expand=True),
         padding=15, data="omni", alignment=ft.Alignment(0, -1),
+        expand=True,
     )
 
     # ==================== TAB 4: Video Edit ====================
@@ -978,8 +981,9 @@ def main(page: ft.Page):
             ve_images,
             ft.Row([ve_aspect, ve_quality, ve_watermark]),
             ft.Button(content="Edit Video", icon=ft.Icons.EDIT, on_click=ve_generate),
-        ], spacing=8),
+        ], spacing=8, expand=True),
         padding=15, data="ve", alignment=ft.Alignment(0, -1),
+        expand=True,
     )
 
     # ==================== TAB 4: Extend Video ====================
@@ -1006,8 +1010,9 @@ def main(page: ft.Page):
             ext_prompt,
             ft.Row([ext_duration, ext_quality]),
             ft.Button(content="Extend Video", icon=ft.Icons.FAST_FORWARD, on_click=ext_generate),
-        ], spacing=8),
+        ], spacing=8, expand=True),
         padding=15, data="ext", alignment=ft.Alignment(0, -1),
+        expand=True,
     )
 
     # Tab panels - only one visible at a time
@@ -1019,15 +1024,12 @@ def main(page: ft.Page):
         ("Video Edit", ft.Icons.EDIT),
         ("Extend Video", ft.Icons.FAST_FORWARD),
     ]
-    for t in all_tabs:
-        t.visible = False
-    all_tabs[0].visible = True
+    tab_content_host = ft.Container(content=all_tabs[0], expand=True)
 
     tab_buttons = []
     def switch_tab(idx):
         def handler(e):
-            for i, t in enumerate(all_tabs):
-                t.visible = (i == idx)
+            tab_content_host.content = all_tabs[idx]
             for i, b in enumerate(tab_buttons):
                 b.style = ft.ButtonStyle(
                     bgcolor=ft.Colors.PRIMARY if i == idx else None,
@@ -1048,16 +1050,19 @@ def main(page: ft.Page):
 
     tab_bar_row = ft.Row(tab_buttons, spacing=4)
 
-    log_panel = ft.Column([
-        ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
-        log_field,
-    ], expand=1, spacing=6)
+    log_panel = ft.Container(
+        content=ft.Column([
+            ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
+            log_field,
+        ], spacing=6, expand=True),
+        height=240,
+    )
 
     # Left side: tab bar + tab panels + log
     left_panel = ft.Column([
         tab_bar_row,
         ft.Divider(),
-        *all_tabs,
+        tab_content_host,
         ft.Divider(),
         log_panel,
     ], expand=2)
@@ -1074,6 +1079,7 @@ def main(page: ft.Page):
     ], expand=1, width=400, tight=True)
 
     left_panel.on_size_change = lambda e: log_layout_size("left_panel", e)
+    tab_content_host.on_size_change = lambda e: log_layout_size("tab_content_host", e)
     right_panel.on_size_change = lambda e: log_layout_size("right_panel", e)
     log_panel.on_size_change = lambda e: log_layout_size("log_panel", e)
     log_field.on_size_change = lambda e: log_layout_size("log_field", e)
