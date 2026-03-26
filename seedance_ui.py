@@ -158,9 +158,16 @@ def main(page: ft.Page):
     settings_btn = ft.IconButton(ft.Icons.SETTINGS, tooltip="Settings", on_click=open_settings)
 
     # Shared controls
-    log_field = ft.TextField(
-        multiline=True, read_only=True, expand=True,
-        text_size=11, border_color=ft.Colors.OUTLINE,
+    # DELICATE_FIX: Carefully debugged. Modify only with failing repro + targeted tests.
+    # Flet TextField does not visually consume vertical slack reliably in this layout,
+    # so the log needs an explicit bordered scroll container instead.
+    log_entries = ft.ListView(expand=True, spacing=2, auto_scroll=True)
+    log_box = ft.Container(
+        content=log_entries,
+        expand=True,
+        border=ft.Border.all(1, ft.Colors.OUTLINE),
+        border_radius=6,
+        padding=8,
     )
     active_jobs_list = ft.ListView(spacing=5, height=200)
     history_list = ft.ListView(expand=True, spacing=5)
@@ -201,7 +208,7 @@ def main(page: ft.Page):
         page.update()
 
     def log(msg):
-        log_field.value = (log_field.value or "") + msg + "\n"
+        log_entries.controls.append(ft.Text(msg, size=11, no_wrap=False))
         page.update()
 
     def log_layout_size(label, e):
@@ -668,13 +675,12 @@ def main(page: ft.Page):
         ), t2v_prompt.value or "")
 
     t2v_tab = ft.Container(
-        content=ft.ListView([
+        content=ft.Column([
             t2v_prompt,
             ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=t2v_generate),
-        ], spacing=8, expand=True),
+        ], spacing=8, tight=True),
         padding=15, data="t2v", alignment=ft.Alignment(0, -1),
-        expand=True,
     )
 
     # ==================== TAB 2: Image to Video ====================
@@ -707,7 +713,7 @@ def main(page: ft.Page):
         ), i2v_prompt.value or "")
 
     i2v_tab = ft.Container(
-        content=ft.ListView([
+        content=ft.Column([
             i2v_prompt,
             ft.Row([
                 i2v_images,
@@ -718,9 +724,8 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=i2v_generate),
-        ], spacing=8, expand=True),
+        ], spacing=8, tight=True),
         padding=15, data="i2v", alignment=ft.Alignment(0, -1),
-        expand=True,
     )
 
     # ==================== TAB 3: Omni Reference ====================
@@ -906,7 +911,7 @@ def main(page: ft.Page):
         ), omni_prompt.value or "")
 
     omni_tab = ft.Container(
-        content=ft.ListView([
+        content=ft.Column([
             omni_prompt,
             ft.Row([
                 omni_images,
@@ -931,9 +936,8 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([omni_aspect, omni_duration, omni_4k]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=omni_generate),
-        ], spacing=8, expand=True),
+        ], spacing=8, tight=True),
         padding=15, data="omni", alignment=ft.Alignment(0, -1),
-        expand=True,
     )
 
     # ==================== TAB 4: Video Edit ====================
@@ -969,7 +973,7 @@ def main(page: ft.Page):
         ), ve_prompt.value or "")
 
     ve_tab = ft.Container(
-        content=ft.ListView([
+        content=ft.Column([
             ve_prompt,
             ft.Row([
                 ve_videos,
@@ -981,9 +985,8 @@ def main(page: ft.Page):
             ve_images,
             ft.Row([ve_aspect, ve_quality, ve_watermark]),
             ft.Button(content="Edit Video", icon=ft.Icons.EDIT, on_click=ve_generate),
-        ], spacing=8, expand=True),
+        ], spacing=8, tight=True),
         padding=15, data="ve", alignment=ft.Alignment(0, -1),
-        expand=True,
     )
 
     # ==================== TAB 4: Extend Video ====================
@@ -1005,14 +1008,13 @@ def main(page: ft.Page):
         ), ext_prompt.value or rid)
 
     ext_tab = ft.Container(
-        content=ft.ListView([
+        content=ft.Column([
             ext_request_id,
             ext_prompt,
             ft.Row([ext_duration, ext_quality]),
             ft.Button(content="Extend Video", icon=ft.Icons.FAST_FORWARD, on_click=ext_generate),
-        ], spacing=8, expand=True),
+        ], spacing=8, tight=True),
         padding=15, data="ext", alignment=ft.Alignment(0, -1),
-        expand=True,
     )
 
     # Tab panels - only one visible at a time
@@ -1024,7 +1026,7 @@ def main(page: ft.Page):
         ("Video Edit", ft.Icons.EDIT),
         ("Extend Video", ft.Icons.FAST_FORWARD),
     ]
-    tab_content_host = ft.Container(content=all_tabs[0], expand=True)
+    tab_content_host = ft.Container(content=all_tabs[0])
 
     tab_buttons = []
     def switch_tab(idx):
@@ -1050,13 +1052,10 @@ def main(page: ft.Page):
 
     tab_bar_row = ft.Row(tab_buttons, spacing=4)
 
-    log_panel = ft.Container(
-        content=ft.Column([
-            ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
-            log_field,
-        ], spacing=6, expand=True),
-        height=240,
-    )
+    log_panel = ft.Column([
+        ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
+        log_box,
+    ], expand=1, spacing=6)
 
     # Left side: tab bar + tab panels + log
     left_panel = ft.Column([
@@ -1082,7 +1081,8 @@ def main(page: ft.Page):
     tab_content_host.on_size_change = lambda e: log_layout_size("tab_content_host", e)
     right_panel.on_size_change = lambda e: log_layout_size("right_panel", e)
     log_panel.on_size_change = lambda e: log_layout_size("log_panel", e)
-    log_field.on_size_change = lambda e: log_layout_size("log_field", e)
+    log_box.on_size_change = lambda e: log_layout_size("log_box", e)
+    log_entries.on_size_change = lambda e: log_layout_size("log_entries", e)
 
     page.overlay.append(settings_dialog)
     main_layout_row = ft.Row(
