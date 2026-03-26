@@ -37,10 +37,10 @@ log_error = _logger.error
 def main(page: ft.Page):
     log_info("main() started")
     page.title = "Seedance 2.0"
-    page.window.width = page.width * 0.85 if page.width else 1700
-    page.window.height = page.height * 0.85 if page.height else 1050
-    page.window.min_width = 900
-    page.window.min_height = 1050
+    page.window.width = page.width * 0.85 if page.width else 1500
+    page.window.height = page.height * 0.78 if page.height else 900
+    page.window.min_width = 1120
+    page.window.min_height = 780
     page.padding = 20
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.theme_mode = ft.ThemeMode.DARK
@@ -320,6 +320,15 @@ def main(page: ft.Page):
         return ft.TextField(
             label="Prompt", multiline=True, min_lines=3, max_lines=4,
             hint_text=hint,
+        )
+
+    def form_row(controls, spacing=10):
+        return ft.Row(
+            controls,
+            spacing=spacing,
+            wrap=True,
+            run_spacing=spacing,
+            vertical_alignment=ft.CrossAxisAlignment.START,
         )
 
     # --- Custom file picker with thumbnail previews ---
@@ -677,7 +686,7 @@ def main(page: ft.Page):
     t2v_tab = ft.Container(
         content=ft.Column([
             t2v_prompt,
-            ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
+            form_row([t2v_aspect, t2v_duration, t2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=t2v_generate),
         ], spacing=8, tight=True),
         padding=15, data="t2v", alignment=ft.Alignment(0, -1),
@@ -715,14 +724,14 @@ def main(page: ft.Page):
     i2v_tab = ft.Container(
         content=ft.Column([
             i2v_prompt,
-            ft.Row([
+            form_row([
                 i2v_images,
                 ft.Column([
                     ft.Button(content="Browse...", icon=ft.Icons.FOLDER_OPEN, on_click=pick_images),
                     i2v_picked,
                 ]),
             ], spacing=10),
-            ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
+            form_row([i2v_aspect, i2v_duration, i2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=i2v_generate),
         ], spacing=8, tight=True),
         padding=15, data="i2v", alignment=ft.Alignment(0, -1),
@@ -913,28 +922,28 @@ def main(page: ft.Page):
     omni_tab = ft.Container(
         content=ft.Column([
             omni_prompt,
-            ft.Row([
+            form_row([
                 omni_images,
                 ft.Column([
                     ft.Button(content="Browse images...", icon=ft.Icons.IMAGE, on_click=pick_omni_images),
                     omni_img_picked,
                 ]),
             ], spacing=10),
-            ft.Row([
+            form_row([
                 omni_videos,
                 ft.Column([
                     ft.Button(content="Browse videos...", icon=ft.Icons.VIDEO_FILE, on_click=pick_omni_videos),
                     omni_vid_picked,
                 ]),
             ], spacing=10),
-            ft.Row([
+            form_row([
                 omni_audios,
                 ft.Column([
                     ft.Button(content="Browse audio...", icon=ft.Icons.AUDIO_FILE, on_click=pick_omni_audios),
                     omni_aud_picked,
                 ]),
             ], spacing=10),
-            ft.Row([omni_aspect, omni_duration, omni_4k]),
+            form_row([omni_aspect, omni_duration, omni_4k]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=omni_generate),
         ], spacing=8, tight=True),
         padding=15, data="omni", alignment=ft.Alignment(0, -1),
@@ -975,7 +984,7 @@ def main(page: ft.Page):
     ve_tab = ft.Container(
         content=ft.Column([
             ve_prompt,
-            ft.Row([
+            form_row([
                 ve_videos,
                 ft.Column([
                     ft.Button(content="Browse videos...", icon=ft.Icons.VIDEO_FILE, on_click=pick_videos),
@@ -983,7 +992,7 @@ def main(page: ft.Page):
                 ]),
             ], spacing=10),
             ve_images,
-            ft.Row([ve_aspect, ve_quality, ve_watermark]),
+            form_row([ve_aspect, ve_quality, ve_watermark]),
             ft.Button(content="Edit Video", icon=ft.Icons.EDIT, on_click=ve_generate),
         ], spacing=8, tight=True),
         padding=15, data="ve", alignment=ft.Alignment(0, -1),
@@ -1011,7 +1020,7 @@ def main(page: ft.Page):
         content=ft.Column([
             ext_request_id,
             ext_prompt,
-            ft.Row([ext_duration, ext_quality]),
+            form_row([ext_duration, ext_quality]),
             ft.Button(content="Extend Video", icon=ft.Icons.FAST_FORWARD, on_click=ext_generate),
         ], spacing=8, tight=True),
         padding=15, data="ext", alignment=ft.Alignment(0, -1),
@@ -1050,7 +1059,7 @@ def main(page: ft.Page):
         )
         tab_buttons.append(btn)
 
-    tab_bar_row = ft.Row(tab_buttons, spacing=4)
+    tab_bar_row = ft.Row(tab_buttons, spacing=4, wrap=True, run_spacing=4)
 
     log_panel = ft.Column([
         ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
