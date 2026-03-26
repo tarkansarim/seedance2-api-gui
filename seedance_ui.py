@@ -167,7 +167,7 @@ def main(page: ft.Page):
     # Video preview
     preview_player_container = ft.Container(expand=True)
     preview_container = ft.Container(
-        content=ft.Column([
+        content=ft.ListView([
             ft.Text("Preview", size=16, weight=ft.FontWeight.BOLD),
             ft.Text("No video yet", size=14, italic=True, color=ft.Colors.ON_SURFACE),
         ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER),
@@ -230,7 +230,7 @@ def main(page: ft.Page):
                 load_preview(src)
 
         return ft.Container(
-            content=ft.Column([
+            content=ft.ListView([
                 ft.Text(f"[{m}] {p[:50]}...", size=11, weight=ft.FontWeight.BOLD),
                 ft.Row([
                     ft.TextButton("Play", icon=ft.Icons.PLAY_CIRCLE, on_click=play_in_preview),
@@ -323,7 +323,7 @@ def main(page: ft.Page):
         # --- Large preview panel (right side of dialog) ---
         preview_img = ft.Image(src="", width=320, height=320, fit=ft.BoxFit.CONTAIN, border_radius=8)
         preview_panel = ft.Container(
-            content=ft.Column([
+            content=ft.ListView([
                 ft.Icon(ft.Icons.TOUCH_APP, size=48, color=ft.Colors.ON_SURFACE_VARIANT),
                 ft.Text("Click a file to preview", size=13, italic=True, color=ft.Colors.ON_SURFACE_VARIANT),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, expand=True),
@@ -458,7 +458,7 @@ def main(page: ft.Page):
                         thumb = ft.Image(src=full, width=150, height=115, fit=ft.BoxFit.COVER, border_radius=6)
                     elif ext in _VIDEO_EXTS:
                         thumb = ft.Container(
-                            content=ft.Column([
+                            content=ft.ListView([
                                 ft.Icon(ft.Icons.MOVIE, size=44, color=ft.Colors.LIGHT_BLUE),
                                 ft.Text("VIDEO", size=9, color=ft.Colors.ON_SURFACE_VARIANT, weight=ft.FontWeight.BOLD),
                             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, spacing=2),
@@ -467,7 +467,7 @@ def main(page: ft.Page):
                         )
                     elif ext in _AUDIO_EXTS:
                         thumb = ft.Container(
-                            content=ft.Column([
+                            content=ft.ListView([
                                 ft.Icon(ft.Icons.GRAPHIC_EQ, size=44, color=ft.Colors.PURPLE),
                                 ft.Text("AUDIO", size=9, color=ft.Colors.ON_SURFACE_VARIANT, weight=ft.FontWeight.BOLD),
                             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, spacing=2),
@@ -504,9 +504,9 @@ def main(page: ft.Page):
             title=ft.Row([
                 ft.Icon(ft.Icons.PERM_MEDIA, size=24),
                 ft.Text(title, size=18, weight=ft.FontWeight.BOLD),
-            ], spacing=8, tight=True),
+            ], spacing=8),
             content=ft.Container(
-                content=ft.Column([
+                content=ft.ListView([
                     ft.Row([
                         ft.IconButton(ft.Icons.HOME, on_click=lambda e: _nav(os.path.expanduser("~")),
                                       tooltip="Home"),
@@ -654,11 +654,11 @@ def main(page: ft.Page):
         ), t2v_prompt.value or "")
 
     t2v_tab = ft.Container(
-        content=ft.Column([
+        content=ft.ListView([
             t2v_prompt,
             ft.Row([t2v_aspect, t2v_duration, t2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=t2v_generate),
-        ], spacing=8, tight=True),
+        ], spacing=8),
         padding=15, data="t2v", alignment=ft.Alignment(0, -1),
     )
 
@@ -692,7 +692,7 @@ def main(page: ft.Page):
         ), i2v_prompt.value or "")
 
     i2v_tab = ft.Container(
-        content=ft.Column([
+        content=ft.ListView([
             i2v_prompt,
             ft.Row([
                 i2v_images,
@@ -703,7 +703,7 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([i2v_aspect, i2v_duration, i2v_quality]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=i2v_generate),
-        ], spacing=8, tight=True),
+        ], spacing=8),
         padding=15, data="i2v", alignment=ft.Alignment(0, -1),
     )
 
@@ -890,7 +890,7 @@ def main(page: ft.Page):
         ), omni_prompt.value or "")
 
     omni_tab = ft.Container(
-        content=ft.Column([
+        content=ft.ListView([
             omni_prompt,
             ft.Row([
                 omni_images,
@@ -915,7 +915,7 @@ def main(page: ft.Page):
             ], spacing=10),
             ft.Row([omni_aspect, omni_duration, omni_4k]),
             ft.Button(content="Generate Video", icon=ft.Icons.PLAY_ARROW, on_click=omni_generate),
-        ], spacing=8, tight=True),
+        ], spacing=8),
         padding=15, data="omni", alignment=ft.Alignment(0, -1),
     )
 
@@ -952,7 +952,7 @@ def main(page: ft.Page):
         ), ve_prompt.value or "")
 
     ve_tab = ft.Container(
-        content=ft.Column([
+        content=ft.ListView([
             ve_prompt,
             ft.Row([
                 ve_videos,
@@ -964,7 +964,7 @@ def main(page: ft.Page):
             ve_images,
             ft.Row([ve_aspect, ve_quality, ve_watermark]),
             ft.Button(content="Edit Video", icon=ft.Icons.EDIT, on_click=ve_generate),
-        ], spacing=8, tight=True),
+        ], spacing=8),
         padding=15, data="ve", alignment=ft.Alignment(0, -1),
     )
 
@@ -987,12 +987,12 @@ def main(page: ft.Page):
         ), ext_prompt.value or rid)
 
     ext_tab = ft.Container(
-        content=ft.Column([
+        content=ft.ListView([
             ext_request_id,
             ext_prompt,
             ft.Row([ext_duration, ext_quality]),
             ft.Button(content="Extend Video", icon=ft.Icons.FAST_FORWARD, on_click=ext_generate),
-        ], spacing=8, tight=True),
+        ], spacing=8),
         padding=15, data="ext", alignment=ft.Alignment(0, -1),
     )
 
