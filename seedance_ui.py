@@ -167,7 +167,7 @@ def main(page: ft.Page):
     # Video preview
     preview_player_container = ft.Container(expand=True)
     preview_container = ft.Container(
-        content=ft.ListView([
+        content=ft.Column([
             ft.Text("Preview", size=16, weight=ft.FontWeight.BOLD),
             ft.Text("No video yet", size=14, italic=True, color=ft.Colors.ON_SURFACE),
         ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER),
@@ -230,7 +230,7 @@ def main(page: ft.Page):
                 load_preview(src)
 
         return ft.Container(
-            content=ft.ListView([
+            content=ft.Column([
                 ft.Text(f"[{m}] {p[:50]}...", size=11, weight=ft.FontWeight.BOLD),
                 ft.Row([
                     ft.TextButton("Play", icon=ft.Icons.PLAY_CIRCLE, on_click=play_in_preview),
@@ -323,7 +323,7 @@ def main(page: ft.Page):
         # --- Large preview panel (right side of dialog) ---
         preview_img = ft.Image(src="", width=320, height=320, fit=ft.BoxFit.CONTAIN, border_radius=8)
         preview_panel = ft.Container(
-            content=ft.ListView([
+            content=ft.Column([
                 ft.Icon(ft.Icons.TOUCH_APP, size=48, color=ft.Colors.ON_SURFACE_VARIANT),
                 ft.Text("Click a file to preview", size=13, italic=True, color=ft.Colors.ON_SURFACE_VARIANT),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, expand=True),
@@ -458,7 +458,7 @@ def main(page: ft.Page):
                         thumb = ft.Image(src=full, width=150, height=115, fit=ft.BoxFit.COVER, border_radius=6)
                     elif ext in _VIDEO_EXTS:
                         thumb = ft.Container(
-                            content=ft.ListView([
+                            content=ft.Column([
                                 ft.Icon(ft.Icons.MOVIE, size=44, color=ft.Colors.LIGHT_BLUE),
                                 ft.Text("VIDEO", size=9, color=ft.Colors.ON_SURFACE_VARIANT, weight=ft.FontWeight.BOLD),
                             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, spacing=2),
@@ -467,7 +467,7 @@ def main(page: ft.Page):
                         )
                     elif ext in _AUDIO_EXTS:
                         thumb = ft.Container(
-                            content=ft.ListView([
+                            content=ft.Column([
                                 ft.Icon(ft.Icons.GRAPHIC_EQ, size=44, color=ft.Colors.PURPLE),
                                 ft.Text("AUDIO", size=9, color=ft.Colors.ON_SURFACE_VARIANT, weight=ft.FontWeight.BOLD),
                             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, spacing=2),
@@ -504,9 +504,9 @@ def main(page: ft.Page):
             title=ft.Row([
                 ft.Icon(ft.Icons.PERM_MEDIA, size=24),
                 ft.Text(title, size=18, weight=ft.FontWeight.BOLD),
-            ], spacing=8),
+            ], spacing=8, tight=True),
             content=ft.Container(
-                content=ft.ListView([
+                content=ft.Column([
                     ft.Row([
                         ft.IconButton(ft.Icons.HOME, on_click=lambda e: _nav(os.path.expanduser("~")),
                                       tooltip="Home"),
