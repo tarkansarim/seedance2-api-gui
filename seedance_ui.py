@@ -999,11 +999,11 @@ def main(page: ft.Page):
 
     # Minimum heights per tab to show all controls without scrolling
     _tab_min_heights = {
-        0: 700,   # T2V: prompt + options + button
-        1: 750,   # I2V: prompt + images + options + button
-        2: 900,   # Omni: prompt + images + videos + audio + options + button
-        3: 800,   # Video Edit: prompt + videos + images + options + button
-        4: 700,   # Extend: request id + prompt + options + button
+        0: 700,    # T2V: prompt + options + button
+        1: 780,    # I2V: prompt + images + options + button
+        2: 1050,   # Omni: prompt + images + videos + audio + options + button
+        3: 830,    # Video Edit: prompt + videos + images + options + button
+        4: 700,    # Extend: request id + prompt + options + button
     }
 
     def on_tab_change(e):
