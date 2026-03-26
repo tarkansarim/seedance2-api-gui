@@ -299,7 +299,7 @@ def main(page: ft.Page):
     def make_prompt(hint="Describe the video..."):
         return ft.TextField(
             label="Prompt", multiline=True, min_lines=3, max_lines=4,
-            expand=True, hint_text=hint,
+            hint_text=hint,
         )
 
     # --- Custom file picker with thumbnail previews ---
@@ -925,7 +925,7 @@ def main(page: ft.Page):
     ve_aspect = make_aspect_ratio()
     ve_quality = make_quality()
     ve_videos = ft.TextField(label="Video URLs or paths (one per line)", multiline=True, min_lines=2, max_lines=3, expand=True)
-    ve_images = ft.TextField(label="Optional image URLs/paths (one per line)", multiline=True, min_lines=1, max_lines=2, expand=True)
+    ve_images = ft.TextField(label="Optional image URLs/paths (one per line)", multiline=True, min_lines=1, max_lines=2)
     ve_watermark = ft.Checkbox(label="Remove watermark", value=False)
     ve_picked = ft.Text("", size=11)
 
@@ -970,7 +970,7 @@ def main(page: ft.Page):
     )
 
     # ==================== TAB 4: Extend Video ====================
-    ext_request_id = ft.TextField(label="Request ID (from previous generation)", expand=True)
+    ext_request_id = ft.TextField(label="Request ID (from previous generation)")
     ext_prompt = make_prompt("Continue the scene with...")
     ext_duration = make_duration()
     ext_quality = make_quality()
@@ -1025,8 +1025,9 @@ def main(page: ft.Page):
         selected_index=0,
         length=5,
         on_change=on_tab_change,
-        height=600,
+        expand=True,
         content=ft.Column(
+            expand=True,
             controls=[
                 ft.TabBar(
                     tabs=[
