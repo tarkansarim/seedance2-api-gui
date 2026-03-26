@@ -157,21 +157,9 @@ def main(page: ft.Page):
 
     settings_btn = ft.IconButton(ft.Icons.SETTINGS, tooltip="Settings", on_click=open_settings)
 
-    def refresh_layout(_=None):
-        page.update()
-
-    def on_window_event(e):
-        if e.type in {
-            ft.WindowEventType.MOVED,
-            ft.WindowEventType.RESIZED,
-            ft.WindowEventType.RESTORE,
-            ft.WindowEventType.UNMAXIMIZE,
-        }:
-            refresh_layout()
-
     # Shared controls
     log_field = ft.TextField(
-        multiline=True, read_only=True, min_lines=3, max_lines=3,
+        multiline=True, read_only=True, expand=True,
         text_size=11, border_color=ft.Colors.OUTLINE,
     )
     active_jobs_list = ft.ListView(spacing=5, height=200)
@@ -1047,15 +1035,19 @@ def main(page: ft.Page):
 
     tab_bar_row = ft.Row(tab_buttons, spacing=4)
 
+    log_panel = ft.Column([
+        ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
+        log_field,
+    ], expand=1, spacing=6)
+
     # Left side: tab bar + tab panels + log
     left_panel = ft.Column([
         tab_bar_row,
         ft.Divider(),
         *all_tabs,
         ft.Divider(),
-        ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
-        log_field,
-    ], expand=2, tight=True)
+        log_panel,
+    ], expand=2)
 
     # Right side: preview + active jobs + history
     right_panel = ft.Column([
@@ -1084,12 +1076,10 @@ def main(page: ft.Page):
             ),
         ], height=90),
         ft.Divider(),
-        ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True, vertical_alignment=ft.CrossAxisAlignment.START),
+        ft.Row([left_panel, ft.VerticalDivider(), right_panel], expand=True, vertical_alignment=ft.CrossAxisAlignment.STRETCH),
     )
 
     # Init API
-    page.on_resize = refresh_layout
-    page.window.on_event = on_window_event
     try:
         api = SeedanceAPI()
         log("API initialized successfully")
