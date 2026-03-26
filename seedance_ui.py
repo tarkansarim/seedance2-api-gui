@@ -1043,7 +1043,7 @@ def main(page: ft.Page):
         ft.Divider(),
         ft.Text("Log", size=11, weight=ft.FontWeight.BOLD),
         log_field,
-    ], expand=2)
+    ], expand=2, alignment=ft.MainAxisAlignment.START)
 
     # Right side: preview + active jobs + history
     right_panel = ft.Column([
@@ -1054,7 +1054,7 @@ def main(page: ft.Page):
         ft.Divider(),
         ft.Text("History", size=14, weight=ft.FontWeight.BOLD),
         history_list,
-    ], expand=1, width=400)
+    ], expand=1, width=400, alignment=ft.MainAxisAlignment.START)
 
     page.overlay.append(settings_dialog)
     page.add(
